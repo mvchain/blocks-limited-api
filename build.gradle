@@ -1,0 +1,37 @@
+buildscript {
+    repositories {
+        // 依赖Maven本地仓库
+        maven { url 'http://maven.aliyun.com/nexus/content/groups/public' }
+    }
+    dependencies {
+        // 使用1.4.2.RELEASE版本的Spring框架
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:1.4.2.RELEASE")
+    }
+}
+
+
+apply plugin: 'java'
+apply plugin: 'org.springframework.boot'
+
+
+//生成的jar包包名和版本
+jar {
+    baseName = 'blocks-limited-api'
+    version =  '0.0.1'
+}
+
+repositories {
+    maven { url 'http://maven.aliyun.com/nexus/content/groups/public' }
+}
+
+//设置jdk的版本
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+//添加编译时的依赖
+dependencies {
+    compile("org.springframework.boot:spring-boot-starter-web")
+    compile("org.projectlombok:lombok:1.16.18")
+    testCompile('org.springframework.boot:spring-boot-starter-test')
+}
+
