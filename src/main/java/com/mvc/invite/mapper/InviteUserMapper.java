@@ -11,12 +11,21 @@ import java.util.List;
  * Created by ywd-pc on 2017/12/8.
  */
 public interface InviteUserMapper extends BaseMapper<InviteUser> {
+
+    @Insert("insert into invite_user " +
+            "(name, cellphone, invite_code) values " +
+            "(#{inviteUser.name}, #{inviteUser.cellphone}, #{inviteUser.inviteCode})")
+    int insert(@Param("inviteUser") InviteUser inviteUser);
+
     @Select("select * from invite_user where id=#{id}")
     InviteUser selectById(@Param("id") Integer id);
 
-    @Select("select * from invite_user")
+    @Select("select * from invite_user order by invite_count desc")
     List<InviteUser> selectAll();
 
-    @Insert("insert into invite_user (name, cellphone, invite_code, sub_product) values (#{inviteUser.})")
-    int insert(@Param("inviteUser") InviteUser inviteUser);
+    @Select("select * from invite_user where invite_code=#{code}")
+    InviteUser selectByCode(@Param("code") String code);
+
+    @Select("select * from invite_user where cellphone=#{cellphone}")
+    InviteUser selectByPhone(@Param("cellphone") String cellphone);
 }

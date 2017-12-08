@@ -9,9 +9,6 @@ import java.util.Date;
 /**
  * Created by ywd-pc on 2017/12/7.
  */
-@Getter
-@Setter
-@ToString
 public class InviteRecorder {
     private Integer id;
     private Integer inviterId;

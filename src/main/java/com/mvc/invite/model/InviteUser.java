@@ -17,7 +17,19 @@ public class InviteUser {
     private String name;
     private String cellphone;
     private String inviteCode;
-    private Integer subProductCount;
+    private String address;
+    private Integer inviteCount;
     private Date createdAt;
     private Date updatedAt;
+
+    public InviteUser() {}
+
+    public InviteUser(String name, String cellphone, String address) {
+        this.name = name;
+        this.cellphone = cellphone;
+        this.address = address;
+        this.inviteCount = 0;
+    }
+
+
 }
