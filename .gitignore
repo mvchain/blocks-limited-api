@@ -14,7 +14,7 @@ target/
 src/main/resources/rebel.xml
 
 # database #
-#application.yml
+application.yml
 /mybatis/src/main/resources/generatorConfig.xml
 
 # log #
