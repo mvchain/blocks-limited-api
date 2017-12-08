@@ -46,7 +46,7 @@ public class InviteService {
 //        Auth auth1 = new Auth(Auth.EMP, "%%MVC##MVC");
         Auth auth1 = new Auth(Auth.EMP, "332");
 //        Auth auth2 = new Auth(Auth.TECH, "bet-man-returns");
-        Auth auth2 = new Auth(Auth.TECH, "332");
+        Auth auth2 = new Auth(Auth.TECH, "223");
         authList.add(auth1);
         authList.add(auth2);
         for (Auth sysAuth : authList) {
