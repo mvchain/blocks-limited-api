@@ -5,10 +5,11 @@ use invite;
 
 create table invite_user(
     id bigint auto_increment,
-    name varchar(24) not null unique,
+    name varchar(24) not null,
     cellphone varchar(24) not null unique,
     invite_code varchar(10) unique,
     invite_count int default 0,
+    address varchar(300) default '',
     ether_address varchar(256),
     created_at timestamp default CURRENT_TIMESTAMP,
     updated_at timestamp default CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
