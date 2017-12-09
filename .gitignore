@@ -1,9 +1,12 @@
-# Maven #
+# Maven/Gradle #
 target/
+.gradle
+build
 
 # IDEA #
 .idea/
 *.iml
+
 
 # Eclipse #
 .settings/
