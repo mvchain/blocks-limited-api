@@ -9,12 +9,13 @@ import java.util.Date;
 /**
  * Created by ywd-pc on 2017/12/7.
  */
-public class InviteRecorder {
+public class InviteRecord {
     private Integer id;
-    private Integer inviterId;
-    private Integer inviteeId;
-    private Integer productCount;
-    private Date transactionAt;
+    private String inviterCode;
+    private Integer quantity;
+    private String uniqueCode;
     private Date createdAt;
     private Date updateAt;
+
+
 }

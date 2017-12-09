@@ -4,6 +4,7 @@ import com.mvc.invite.model.InviteUser;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
 
 import java.util.List;
 
@@ -12,7 +13,7 @@ import java.util.List;
  */
 public interface InviteUserMapper extends BaseMapper<InviteUser> {
 
-    @Insert("insert into invite_user " +
+    @Insert("insertInviteRecord into invite_user " +
             "(name, cellphone, invite_code) values " +
             "(#{inviteUser.name}, #{inviteUser.cellphone}, #{inviteUser.inviteCode})")
     int insert(@Param("inviteUser") InviteUser inviteUser);
@@ -28,4 +29,7 @@ public interface InviteUserMapper extends BaseMapper<InviteUser> {
 
     @Select("select * from invite_user where cellphone=#{cellphone}")
     InviteUser selectByPhone(@Param("cellphone") String cellphone);
+
+    @Update("update invite_user set invite_count = #{quantity} where invite_code=#{inviteCode}")
+    int updateCount(@Param("inviteCode") String inviteCode, @Param("quantity") Integer quantity);
 }

@@ -1,8 +1,12 @@
 package com.mvc.invite.service;
 
+import com.mvc.invite.mapper.InviteRecordMapper;
 import com.mvc.invite.mapper.InviteUserMapper;
 import com.mvc.invite.model.Auth;
+import com.mvc.invite.model.InviteRecord;
 import com.mvc.invite.model.InviteUser;
+import com.mvc.invite.model.Order;
+import lombok.extern.java.Log;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -13,6 +17,7 @@ import java.util.Random;
 /**
  * Created by ywd-pc on 2017/12/8.
  */
+@Log
 @Service
 public class InviteService {
 
@@ -28,6 +33,8 @@ public class InviteService {
 
     @Autowired
     private InviteUserMapper inviteUserMapper;
+    @Autowired
+    private InviteRecordMapper inviteRecordMapper;
 
     public String generateUnduplicatedInviteCode() {
         Boolean duplication = true;
@@ -67,5 +74,42 @@ public class InviteService {
         }
         String code = sb.toString();
         return code;
+    }
+
+    public int batchUpdate(String csvData) {
+        int updateCount = 0;
+        List<Order> orders = this.parseCsv(csvData);
+        for (Order order : orders) {
+            if ("已完成".equals(order.getStatus())) {
+                InviteRecord inviteRecord = inviteRecordMapper.selectByCode(order.getOrderCode());
+                // 没有保存过的orderCode
+                if (inviteRecord == null) {
+                    InviteUser inviteUser = inviteUserMapper.selectByCode(order.getMemo());
+                    // 有这个邀请码
+                    if (inviteUser != null) {
+                        inviteRecordMapper.insertInviteRecord(order);
+                        inviteUserMapper.updateCount(order.getMemo(), inviteUser.getInviteCount() + order.getQuantity());
+                        updateCount++;
+                    }
+                }
+            }
+        }
+        return updateCount;
+    }
+
+    public List<Order> parseCsv(String csvData) {
+        List<Order> list = new ArrayList<>();
+        if (csvData != null) {
+            String[] lines = csvData.split("\n");
+            for (String line : lines) {
+                String[] params = line.split(",");
+                if (!params[0].equals("订单编号")) {
+                    int quantity = Integer.parseInt(params[19]);
+                    Order order = new Order(params[0], params[2], quantity, params[23]);
+                    list.add(order);
+                }
+            }
+        }
+        return list;
     }
 }

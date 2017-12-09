@@ -8,6 +8,7 @@ import com.mvc.invite.model.InviteUser;
 import com.mvc.invite.model.InviteUserVO;
 import com.mvc.invite.service.InviteService;
 import com.mvc.invite.service.ResponseGenerator;
+import lombok.extern.java.Log;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,6 +18,7 @@ import java.util.List;
  * Created by ywd-pc on 2017/12/8.
  */
 @RestController
+@Log
 public class InviteController {
     @Autowired
     private InviteUserMapper inviteUserMapper;
@@ -59,5 +61,19 @@ public class InviteController {
         inviteUser.setInviteCode(inviteService.generateUnduplicatedInviteCode());
         int result = inviteUserMapper.insert(inviteUser);
         return responseGenerator.success(result);
+    }
+
+    @PostMapping("/inviteCount")
+    public String inviteCount(
+            @RequestParam String password,
+            @RequestParam String csvData) throws JsonProcessingException {
+
+        Auth auth = new Auth(Auth.TECH, password);
+        if (inviteService.auth(auth)) {
+            int updateCount = inviteService.batchUpdate(csvData);
+            return responseGenerator.success(updateCount);
+        } else {
+            return responseGenerator.fail("密码错误！");
+        }
     }
 }
