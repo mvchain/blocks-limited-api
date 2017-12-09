@@ -13,9 +13,9 @@ import java.util.List;
  */
 public interface InviteUserMapper extends BaseMapper<InviteUser> {
 
-    @Insert("insertInviteRecord into invite_user " +
-            "(name, cellphone, invite_code) values " +
-            "(#{inviteUser.name}, #{inviteUser.cellphone}, #{inviteUser.inviteCode})")
+    @Insert("insert into invite_user " +
+            "(name, cellphone, invite_code, ether_address) values " +
+            "(#{inviteUser.name}, #{inviteUser.cellphone}, #{inviteUser.inviteCode}, #{inviteUser.etherAddress})")
     int insert(@Param("inviteUser") InviteUser inviteUser);
 
     @Select("select * from invite_user where id=#{id}")

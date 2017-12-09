@@ -9,6 +9,7 @@ create table invite_user(
     cellphone varchar(24) not null unique,
     invite_code varchar(10) unique,
     invite_count int default 0,
+    ether_address varchar(256),
     created_at timestamp default CURRENT_TIMESTAMP,
     updated_at timestamp default CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     primary key (id)

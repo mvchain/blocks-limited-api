@@ -50,14 +50,15 @@ public class InviteController {
     public String inviteUser(
             @RequestParam String name,
             @RequestParam String cellphone,
-            @RequestParam String address) throws JsonProcessingException {
+            @RequestParam String address,
+            @RequestParam String etherAddress) throws JsonProcessingException {
         // Check if cellphone already exists.
         InviteUser preUser = inviteUserMapper.selectByPhone(cellphone);
         if (preUser != null) {
             return responseGenerator.success(0);
         }
 
-        InviteUser inviteUser = new InviteUser(name, cellphone, address);
+        InviteUser inviteUser = new InviteUser(name, cellphone, address, etherAddress);
         inviteUser.setInviteCode(inviteService.generateUnduplicatedInviteCode());
         int result = inviteUserMapper.insert(inviteUser);
         return responseGenerator.success(result);

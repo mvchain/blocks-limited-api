@@ -25,6 +25,7 @@ public class InviteUserVO {
     private String inviteCode;
     private String address;
     private Integer inviteCount;
+    private String etherAddress;
     private String createdAt;
     private String updatedAt;
 
@@ -36,6 +37,7 @@ public class InviteUserVO {
         vo.inviteCode = u.getInviteCode();
         vo.address = u.getAddress();
         vo.inviteCount = u.getInviteCount();
+        vo.etherAddress = u.getEtherAddress();
         vo.createdAt = DateUtil.DateToString(u.getCreatedAt(), format);
         vo.updatedAt = DateUtil.DateToString(u.getUpdatedAt(), format);
         return vo;

@@ -18,17 +18,19 @@ public class InviteUser {
     private String cellphone;
     private String inviteCode;
     private String address;
+    private String etherAddress;
     private Integer inviteCount;
     private Date createdAt;
     private Date updatedAt;
 
     public InviteUser() {}
 
-    public InviteUser(String name, String cellphone, String address) {
+    public InviteUser(String name, String cellphone, String address, String etherAddress) {
         this.name = name;
         this.cellphone = cellphone;
         this.address = address;
         this.inviteCount = 0;
+        this.etherAddress = etherAddress;
     }
 
 
