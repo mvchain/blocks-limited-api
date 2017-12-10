@@ -9,6 +9,7 @@ import com.mvc.invite.model.Order;
 import lombok.extern.java.Log;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -105,7 +106,8 @@ public class InviteService {
                 String[] params = line.split(",");
                 if (!params[0].equals("订单编号")) {
                     int quantity = Integer.parseInt(params[19]);
-                    Order order = new Order(params[0], params[2], quantity, params[23]);
+                    String memo = StringUtils.isEmpty(params[23]) ? "" : params[23].trim();
+                    Order order = new Order(params[0], params[2], quantity, memo);
                     list.add(order);
                 }
             }
