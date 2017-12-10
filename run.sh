@@ -1,4 +1,4 @@
-cd /www/var/html/invite
+cd /var/www/html/invite
 git pull
 cd /opt/blocks-limited-api/
 git pull
