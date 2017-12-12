@@ -19,13 +19,13 @@ public interface KsOrderMapper extends BaseMapper<KsOrder> {
     @Select("select * from ks_order where id=#{id}")
     KsOrder selectById(@Param("id") Integer id);
 
-    @Select("select * from ks_order")
+    @Select("select * from ks_order order by created_at desc")
     List<KsOrder> selectKsOrders();
 
-    @Select("select * from ks_order where cellphone=#{cellphone}")
+    @Select("select * from ks_order where cellphone=#{cellphone} order by created_at desc")
     List<KsOrder> selectKsOrdersByPhone(@Param("cellphone") String cellphone);
 
-    @Select("select * from ks_order where cellphone like CONCAT(#{searchText},'%') or name like CONCAT(#{searchText},'%')")
+    @Select("select * from ks_order where cellphone like CONCAT(#{searchText},'%') or name like CONCAT(#{searchText},'%') order by created_at desc")
     List<KsOrder> selectKsOrdersBySearchText(@Param("searchText") String searchText);
 
     @Update("update ks_order set status=#{status}, comment=#{comment} " +
