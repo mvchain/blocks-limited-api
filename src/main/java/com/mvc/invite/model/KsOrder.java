@@ -4,6 +4,8 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+import javax.persistence.Table;
+import java.io.Serializable;
 import java.util.Date;
 
 /**
@@ -12,7 +14,8 @@ import java.util.Date;
 @Setter
 @Getter
 @ToString
-public class KsOrder {
+@Table(name = "ks_order")
+public class KsOrder extends BaseModel implements Serializable {
 
     public static final int STATUS_UNPAID = 0;
     public static final int STATUS_PAID = 1;
@@ -21,12 +24,16 @@ public class KsOrder {
     public static final int STATUS_DELIVERING = 4;
     public static final int STATUS_FINISHED = 5;
 
+    private Integer id;
     private String name;
     private String cellphone;
     private String address;
     private Integer quantity;
     private Integer sum;
     private String inviteCode;
+    private Integer payChannel;
+    private String payAccount;
+    private String payerName;
     private String comment;
     private Integer status;
     private Date createdAt;

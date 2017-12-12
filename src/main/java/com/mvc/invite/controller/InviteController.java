@@ -15,10 +15,12 @@ import io.swagger.annotations.ApiOperation;
 import lombok.extern.java.Log;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import tk.mybatis.mapper.entity.Condition;
 import tk.mybatis.mapper.entity.Example;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -111,15 +113,29 @@ public class InviteController {
         return responseGenerator.success(list);
     }
 
+//    @ApiOperation(value = "审核列表", notes = "searchText为手机号和姓名搜索")
+//    @GetMapping("/order")
+//    public String orderlist(
+//            @RequestParam String searchText) throws JsonProcessingException {
+//        Condition condition = new Condition(KsOrder.class);
+//        Example.Criteria criteria = condition.createCriteria();
+//        criteria.andLike("cellphone", searchText);
+//        criteria.andLike("name", searchText);
+//        condition.setOrderByClause("updated_at desc");
+//        List<KsOrder> list = ksOrderMapper.selectByExample(condition);
+//        return responseGenerator.success(list);
+//    }
+
     @ApiOperation(value = "审核列表", notes = "searchText为手机号和姓名搜索")
     @GetMapping("/order")
     public String orderlist(
             @RequestParam String searchText) throws JsonProcessingException {
-        Condition condition = new Condition(KsOrder.class);
-        Example.Criteria criteria = condition.createCriteria();
-        criteria.andLike("cellphone", searchText);
-        criteria.andLike("name", searchText);
-        List<KsOrder> list = ksOrderMapper.selectByExample(condition);
+        List<KsOrder> list = new ArrayList<>();
+        if (StringUtils.isEmpty(searchText)) {
+            list = ksOrderMapper.selectKsOrders();
+        } else {
+            list = ksOrderMapper.selectKsOrdersBySearchText(searchText);
+        }
         return responseGenerator.success(list);
     }
 
@@ -151,9 +167,10 @@ public class InviteController {
     public String orderPaid(
             @RequestParam Integer id,
             @RequestParam String payChannel,
-            @RequestParam String payAccount
+            @RequestParam String payAccount,
+            @RequestParam String payerName
     ) throws JsonProcessingException {
-        int result = ksOrderMapper.updatePaid(id, KsOrder.STATUS_PAID, payChannel, payAccount);
+        int result = ksOrderMapper.updatePaid(id, KsOrder.STATUS_PAID, payChannel, payAccount, payerName);
         return responseGenerator.success(result);
     }
 

@@ -24,6 +24,9 @@ public interface KsOrderMapper extends BaseMapper<KsOrder> {
     @Select("select * from ks_order where cellphone=#{cellphone}")
     List<KsOrder> selectKsOrdersByPhone(@Param("cellphone") String cellphone);
 
+    @Select("select * from ks_order where cellphone like CONCAT(#{searchText},'%') or CONCAT()")
+    List<KsOrder> selectKsOrdersBySearchText(@Param("searchText") String searchText);
+
     @Update("update ks_order set status=#{status}, comment=#{comment} " +
             "where id=#{id}")
     int updateComment(
@@ -39,7 +42,7 @@ public interface KsOrderMapper extends BaseMapper<KsOrder> {
             @Param("status") Integer status
     );
 
-    @Update("update ks_order set status=#{status}, pay_channel=#{payChannel}, pay_account=#{payAccount} " +
+    @Update("update ks_order set status=#{status}, pay_channel=#{payChannel}, pay_account=#{payAccount} , payer_name=#{payerName}" +
             "where id=#{id}")
-    int updatePaid(@Param("id") Integer id, @Param("status") int status, @Param("payChannel") String payChannel, @Param("payAccount") String payAccount);
+    int updatePaid(@Param("id") Integer id, @Param("status") int status, @Param("payChannel") String payChannel, @Param("payAccount") String payAccount, @Param("payerName") String payerName);
 }
