@@ -144,14 +144,14 @@ public class InviteController {
     @PutMapping("/order/delivery")
     public String orderDelivered(@RequestParam Integer id) throws JsonProcessingException {
         int result = ksOrderMapper.updateStatus(id, KsOrder.STATUS_DELIVERING);
-        return responseGenerator.success(null);
+        return responseGenerator.success(result);
     }
 
     @ApiOperation(value = "完成订单", notes = "data为1表示成功")
     @PutMapping("/order/finish")
     public String orderFinished(@RequestParam Integer id) throws JsonProcessingException {
         int result = ksOrderMapper.updateStatus(id, KsOrder.STATUS_FINISHED);
-        return responseGenerator.success(null);
+        return responseGenerator.success(result);
     }
 
     @ApiOperation(value = "确认订单", notes = "data为1表示成功")
