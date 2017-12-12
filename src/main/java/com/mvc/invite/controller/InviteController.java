@@ -154,10 +154,14 @@ public class InviteController {
         return responseGenerator.success(result);
     }
 
-    @ApiOperation(value = "确认订单", notes = "data为1表示成功")
+    @ApiOperation(value = "审核通过", notes = "data为1表示成功")
     @PutMapping("/order/confirmation")
     public String orderConfirmed(@RequestParam Integer id) throws JsonProcessingException {
         int result = ksOrderMapper.updateStatus(id, KsOrder.STATUS_CONFIRMED);
+        KsOrder ksOrder = ksOrderMapper.selectById(id);
+        if (!StringUtils.isEmpty(ksOrder.getInviteCode())) {
+            inviteUserMapper.updateCount(ksOrder.getInviteCode(), ksOrder.getQuantity());
+        }
         return responseGenerator.success(result);
     }
 
@@ -175,7 +179,7 @@ public class InviteController {
         return responseGenerator.success(result);
     }
 
-    @ApiOperation(value = "确认订单失败", notes = "data为1表示成功")
+    @ApiOperation(value = "审核不通过", notes = "data为1表示成功")
     @PutMapping("/order/confirm/failure")
     public String orderConfirmFailure(@RequestParam Integer id, @RequestParam String comment) throws JsonProcessingException {
         int result = ksOrderMapper.updateComment(id, KsOrder.STATUS_UNCONFIRMED, comment);

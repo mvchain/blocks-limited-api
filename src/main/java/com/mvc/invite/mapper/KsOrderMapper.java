@@ -16,6 +16,9 @@ public interface KsOrderMapper extends BaseMapper<KsOrder> {
     @Options(useGeneratedKeys = true, keyProperty = "ksOrder.id")
     int insertKsOrder(@Param("ksOrder") KsOrder ksOrder);
 
+    @Select("select * from ks_order where id=#{id}")
+    KsOrder selectById(@Param("id") Integer id);
+
     @Select("select * from ks_order")
     List<KsOrder> selectKsOrders();
 
