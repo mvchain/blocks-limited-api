@@ -41,10 +41,12 @@ drop table if exists ks_order;
 create table ks_order(
     id bigint primary key auto_increment,
     name varchar(24) not null,
-    cellphone varchar(24) not null unique,
-    invite_code varchar(10) unique,
+    cellphone varchar(24) not null,
+    invite_code varchar(10),
     address varchar(300) default '',
     quantity int,
+    sum int,
+    comment varchar(1000),
     status tinyint default 0,
     created_at timestamp default CURRENT_TIMESTAMP,
     updated_at timestamp default CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP

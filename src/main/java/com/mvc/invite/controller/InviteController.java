@@ -3,14 +3,18 @@ package com.mvc.invite.controller;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mvc.invite.mapper.InviteUserMapper;
+import com.mvc.invite.mapper.KsOrderMapper;
 import com.mvc.invite.model.Auth;
 import com.mvc.invite.model.InviteUser;
 import com.mvc.invite.model.InviteUserVO;
 import com.mvc.invite.model.KsOrder;
 import com.mvc.invite.service.InviteService;
 import com.mvc.invite.service.ResponseGenerator;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import lombok.extern.java.Log;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,9 +24,16 @@ import java.util.List;
  */
 @RestController
 @Log
+@Api(value = "库神钱包", description = "")
 public class InviteController {
+
+    @Value("${price}")
+    private Integer price;
+
     @Autowired
     private InviteUserMapper inviteUserMapper;
+    @Autowired
+    private KsOrderMapper ksOrderMapper;
     @Autowired
     private InviteService inviteService;
     @Autowired
@@ -30,6 +41,7 @@ public class InviteController {
     @Autowired
     private ResponseGenerator responseGenerator;
 
+    @ApiOperation(value = "邀请码用户信息列表")
     @GetMapping("/inviteUser")
     public String inviteUser(@RequestParam String password)throws JsonProcessingException {
         Auth auth = new Auth(Auth.EMP, password);
@@ -41,12 +53,15 @@ public class InviteController {
         }
     }
 
+    @ApiOperation(value = "使用手机号查找邀请码用户")
     @GetMapping("/inviteUser/{cellphone}")
     public String inviteUserByPhone(@PathVariable String cellphone)throws JsonProcessingException {
         InviteUser inviteUser = inviteUserMapper.selectByPhone(cellphone);
         return responseGenerator.success(inviteUser);
     }
 
+
+    @ApiOperation(value = "用户获得邀请码")
     @PostMapping("/inviteUser")
     public String inviteUser(
             @RequestParam String name,
@@ -65,6 +80,8 @@ public class InviteController {
         return responseGenerator.success(result);
     }
 
+
+    @ApiOperation(value = "（Deprecated）上传订单数据")
     @PostMapping("/inviteCount")
     public String inviteCount(
             @RequestParam String password,
@@ -79,14 +96,65 @@ public class InviteController {
         }
     }
 
+    @ApiOperation(value = "下单", notes = "inviteCode非必填<br/>" +
+            "data为1表示成功")
     @PostMapping("/order")
     public String makeOrder(
-        @RequestParam String name,
-        @RequestParam String cellphone,
-        @RequestParam String address,
-        @RequestParam Integer quantity)throws Exception {
-        KsOrder ksOrder = new KsOrder(name, cellphone, address, quantity);
-
-        return null;
+        @RequestBody KsOrder ksOrder)throws Exception {
+        ksOrder.setStatus(KsOrder.STATUS_UNPAID);
+        ksOrder.setSum(ksOrder.getQuantity() * price);
+        int result = ksOrderMapper.insertKsOrder(ksOrder);
+        return responseGenerator.success(result);
     }
+
+    @ApiOperation(value = "手机号查订单", notes = "")
+    @GetMapping("/order/{cellphone}")
+    public String orderByPhone(@PathVariable String cellphone) throws JsonProcessingException {
+        List<KsOrder> list = ksOrderMapper.selectKsOrdersByPhone(cellphone);
+        return responseGenerator.success(list);
+    }
+
+    @ApiOperation(value = "审核列表", notes = "暂无分页")
+    @GetMapping("/order")
+    public String orderlist() throws JsonProcessingException {
+        List<KsOrder> list = ksOrderMapper.selectKsOrders();
+        return responseGenerator.success(list);
+    }
+
+    @ApiOperation(value = "确认发货", notes = "data为1表示成功")
+    @PutMapping("/order/delivery")
+    public String orderDelivered(@RequestParam Integer id) throws JsonProcessingException {
+        int result = ksOrderMapper.updateStatus(id, KsOrder.STATUS_DELIVERING);
+        return responseGenerator.success(null);
+    }
+
+    @ApiOperation(value = "完成订单", notes = "data为1表示成功")
+    @PutMapping("/order/finish")
+    public String orderFinished(@RequestParam Integer id) throws JsonProcessingException {
+        int result = ksOrderMapper.updateStatus(id, KsOrder.STATUS_FINISHED);
+        return responseGenerator.success(null);
+    }
+
+    @ApiOperation(value = "确认订单", notes = "data为1表示成功")
+    @PutMapping("/order/confirmation")
+    public String orderConfirmed(@RequestParam Integer id) throws JsonProcessingException {
+        int result = ksOrderMapper.updateStatus(id, KsOrder.STATUS_CONFIRMED);
+        return responseGenerator.success(result);
+    }
+
+    @ApiOperation(value = "确认付款", notes = "data为1表示成功")
+    @PutMapping("/order/paid")
+    public String orderPaid(@RequestParam Integer id) throws JsonProcessingException {
+        int result = ksOrderMapper.updateStatus(id, KsOrder.STATUS_PAID);
+        return responseGenerator.success(result);
+    }
+
+    @ApiOperation(value = "确认订单失败", notes = "data为1表示成功")
+    @PutMapping("/order/confirm/failure")
+    public String orderConfirmFailure(@RequestParam Integer id, @RequestParam String comment) throws JsonProcessingException {
+        int result = ksOrderMapper.updateComment(id, KsOrder.STATUS_UNCONFIRMED, comment);
+        return responseGenerator.success(result);
+    }
+
+
 }
