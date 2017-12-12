@@ -33,14 +33,14 @@ public interface KsOrderMapper extends BaseMapper<KsOrder> {
             @Param("comment") String comment
     );
 
-    @Update("update ks_order set status=#{status}" +
+    @Update("update ks_order set status=#{status} " +
             "where id=#{id}")
     int updateStatus(
             @Param("id") Integer id,
             @Param("status") Integer status
     );
 
-    @Update("update ks_order set status=#{status}, pay_channel=#{payChannel}, pay_account=#{payAccount} , payer_name=#{payerName}" +
+    @Update("update ks_order set status=#{status}, pay_channel=#{payChannel}, pay_account=#{payAccount} , payer_name=#{payerName} " +
             "where id=#{id}")
     int updatePaid(@Param("id") Integer id, @Param("status") int status, @Param("payChannel") String payChannel, @Param("payAccount") String payAccount, @Param("payerName") String payerName);
 }
