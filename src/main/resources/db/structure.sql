@@ -3,6 +3,7 @@ drop database if exists invite;
 create database invite;
 use invite;
 
+drop table is exists invite_user;
 create table invite_user(
     id bigint auto_increment,
     name varchar(24) not null,
@@ -35,3 +36,17 @@ create table auth(
     created_at timestamp default CURRENT_TIMESTAMP,
     updated_at timestamp default CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+drop table if exists ks_order;
+create table ks_order(
+    id bigint primary key auto_increment,
+    name varchar(24) not null,
+    cellphone varchar(24) not null unique,
+    invite_code varchar(10) unique,
+    address varchar(300) default '',
+    quantity int,
+    status tinyint default 0,
+    created_at timestamp default CURRENT_TIMESTAMP,
+    updated_at timestamp default CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+

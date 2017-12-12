@@ -6,6 +6,7 @@ import com.mvc.invite.mapper.InviteUserMapper;
 import com.mvc.invite.model.Auth;
 import com.mvc.invite.model.InviteUser;
 import com.mvc.invite.model.InviteUserVO;
+import com.mvc.invite.model.KsOrder;
 import com.mvc.invite.service.InviteService;
 import com.mvc.invite.service.ResponseGenerator;
 import lombok.extern.java.Log;
@@ -76,5 +77,16 @@ public class InviteController {
         } else {
             return responseGenerator.fail("密码错误！");
         }
+    }
+
+    @PostMapping("/order")
+    public String makeOrder(
+        @RequestParam String name,
+        @RequestParam String cellphone,
+        @RequestParam String address,
+        @RequestParam Integer quantity)throws Exception {
+        KsOrder ksOrder = new KsOrder(name, cellphone, address, quantity);
+
+        return null;
     }
 }
