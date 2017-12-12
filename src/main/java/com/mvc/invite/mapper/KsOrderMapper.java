@@ -38,4 +38,8 @@ public interface KsOrderMapper extends BaseMapper<KsOrder> {
             @Param("id") Integer id,
             @Param("status") Integer status
     );
+
+    @Update("update ks_order set status=#{status}, pay_channel=#{payChannel}, pay_account=#{payAccount} " +
+            "where id=#{id}")
+    int updatePaid(@Param("id") Integer id, @Param("status") int status, @Param("payChannel") String payChannel, @Param("payAccount") String payAccount);
 }

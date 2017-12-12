@@ -16,6 +16,8 @@ import lombok.extern.java.Log;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
+import tk.mybatis.mapper.entity.Condition;
+import tk.mybatis.mapper.entity.Example;
 
 import java.util.List;
 
@@ -41,16 +43,11 @@ public class InviteController {
     @Autowired
     private ResponseGenerator responseGenerator;
 
-    @ApiOperation(value = "邀请码用户信息列表")
+    @ApiOperation(value = "邀请码用户信息列表", notes = "邀请人数从大到小")
     @GetMapping("/inviteUser")
-    public String inviteUser(@RequestParam String password)throws JsonProcessingException {
-        Auth auth = new Auth(Auth.EMP, password);
-        if (inviteService.auth(auth)) {
-            List<InviteUser> inviteUsers = inviteUserMapper.selectAll();
-            return responseGenerator.success(InviteUserVO.convert(inviteUsers));
-        } else {
-            return responseGenerator.fail("密码错误！");
-        }
+    public String inviteUser()throws JsonProcessingException {
+        List<InviteUser> inviteUsers = inviteUserMapper.selectAll();
+        return responseGenerator.success(InviteUserVO.convert(inviteUsers));
     }
 
     @ApiOperation(value = "使用手机号查找邀请码用户")
@@ -114,10 +111,15 @@ public class InviteController {
         return responseGenerator.success(list);
     }
 
-    @ApiOperation(value = "审核列表", notes = "暂无分页")
+    @ApiOperation(value = "审核列表", notes = "searchText为手机号和姓名搜索")
     @GetMapping("/order")
-    public String orderlist() throws JsonProcessingException {
-        List<KsOrder> list = ksOrderMapper.selectKsOrders();
+    public String orderlist(
+            @RequestParam String searchText) throws JsonProcessingException {
+        Condition condition = new Condition(KsOrder.class);
+        Example.Criteria criteria = condition.createCriteria();
+        criteria.andLike("cellphone", searchText);
+        criteria.andLike("name", searchText);
+        List<KsOrder> list = ksOrderMapper.selectByExample(condition);
         return responseGenerator.success(list);
     }
 
@@ -142,10 +144,16 @@ public class InviteController {
         return responseGenerator.success(result);
     }
 
-    @ApiOperation(value = "确认付款", notes = "data为1表示成功")
+    @ApiOperation(value = "确认付款", notes = "" +
+            "data为1表示成功<br/>" +
+            "payChannel 1 为支付宝，2 为银行转账<br/>")
     @PutMapping("/order/paid")
-    public String orderPaid(@RequestParam Integer id) throws JsonProcessingException {
-        int result = ksOrderMapper.updateStatus(id, KsOrder.STATUS_PAID);
+    public String orderPaid(
+            @RequestParam Integer id,
+            @RequestParam String payChannel,
+            @RequestParam String payAccount
+    ) throws JsonProcessingException {
+        int result = ksOrderMapper.updatePaid(id, KsOrder.STATUS_PAID, payChannel, payAccount);
         return responseGenerator.success(result);
     }
 

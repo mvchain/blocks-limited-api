@@ -46,6 +46,8 @@ create table ks_order(
     address varchar(300) default '',
     quantity int,
     sum int,
+    pay_channel int,
+    pay_account varchar(256),
     comment varchar(1000),
     status tinyint default 0,
     created_at timestamp default CURRENT_TIMESTAMP,
