@@ -160,7 +160,8 @@ public class InviteController {
         int result = ksOrderMapper.updateStatus(id, KsOrder.STATUS_CONFIRMED);
         KsOrder ksOrder = ksOrderMapper.selectById(id);
         if (!StringUtils.isEmpty(ksOrder.getInviteCode())) {
-            inviteUserMapper.updateCount(ksOrder.getInviteCode(), ksOrder.getQuantity());
+            InviteUser inviteUser = inviteUserMapper.selectByCode(ksOrder.getInviteCode());
+            inviteUserMapper.updateCount(ksOrder.getInviteCode(), inviteUser.getInviteCount() + ksOrder.getQuantity());
         }
         return responseGenerator.success(result);
     }
