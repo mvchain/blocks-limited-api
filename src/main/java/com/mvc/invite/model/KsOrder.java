@@ -1,5 +1,6 @@
 package com.mvc.invite.model;
 
+import com.mvc.invite.service.DateUtil;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -7,6 +8,7 @@ import lombok.ToString;
 import javax.persistence.Table;
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 /**
  * Created by ywd-pc on 2017/12/11.
@@ -15,7 +17,7 @@ import java.util.Date;
 @Getter
 @ToString
 @Table(name = "ks_order")
-public class KsOrder extends BaseModel implements Serializable {
+public class KsOrder {
 
     public static final int STATUS_UNPAID = 0;
     public static final int STATUS_PAID = 1;
@@ -39,6 +41,9 @@ public class KsOrder extends BaseModel implements Serializable {
     private Date createdAt;
     private Date updatedAt;
 
+    private String createdAtStr;
+    private String updatedAtStr;
+
 
     public KsOrder() { }
 
@@ -48,5 +53,16 @@ public class KsOrder extends BaseModel implements Serializable {
         this.address = address;
         this.quantity = quantity;
         this.sum = sum;
+    }
+
+    public static void fillDateStr(KsOrder order) {
+        order.setCreatedAtStr(DateUtil.DateToString(order.getCreatedAt(), "yyyy-MM-dd hh:mm:ss"));
+        order.setUpdatedAtStr(DateUtil.DateToString(order.getUpdatedAt(), "yyyy-MM-dd hh:mm:ss"));
+    }
+
+    public static void fillDateStr(List<KsOrder> orders) {
+        for (KsOrder order : orders) {
+            fillDateStr(order);
+        }
     }
 }

@@ -96,14 +96,14 @@ public class InviteController {
     }
 
     @ApiOperation(value = "下单", notes = "inviteCode非必填<br/>" +
-            "data为1表示成功")
+            "返回插入ID")
     @PostMapping("/order")
     public String makeOrder(
         @RequestBody KsOrder ksOrder)throws Exception {
         ksOrder.setStatus(KsOrder.STATUS_UNPAID);
         ksOrder.setSum(ksOrder.getQuantity() * price);
-        int result = ksOrderMapper.insertKsOrder(ksOrder);
-        return responseGenerator.success(result);
+        ksOrderMapper.insertKsOrder(ksOrder);
+        return responseGenerator.success(ksOrder.getId());
     }
 
     @ApiOperation(value = "手机号查订单", notes = "")
@@ -136,6 +136,7 @@ public class InviteController {
         } else {
             list = ksOrderMapper.selectKsOrdersBySearchText(searchText);
         }
+        KsOrder.fillDateStr(list);
         return responseGenerator.success(list);
     }
 

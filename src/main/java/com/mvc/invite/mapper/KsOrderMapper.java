@@ -1,10 +1,7 @@
 package com.mvc.invite.mapper;
 
 import com.mvc.invite.model.KsOrder;
-import org.apache.ibatis.annotations.Insert;
-import org.apache.ibatis.annotations.Param;
-import org.apache.ibatis.annotations.Select;
-import org.apache.ibatis.annotations.Update;
+import org.apache.ibatis.annotations.*;
 
 import java.util.List;
 
@@ -16,6 +13,7 @@ public interface KsOrderMapper extends BaseMapper<KsOrder> {
     @Insert("insert into ks_order (name, cellphone, address, quantity, sum, invite_code, comment, status) values " +
             "(#{ksOrder.name},#{ksOrder.cellphone},#{ksOrder.address},#{ksOrder.quantity}," +
             " #{ksOrder.sum},#{ksOrder.inviteCode},#{ksOrder.comment},#{ksOrder.status})")
+    @Options(useGeneratedKeys = true, keyProperty = "ksOrder.id")
     int insertKsOrder(@Param("ksOrder") KsOrder ksOrder);
 
     @Select("select * from ks_order")
@@ -24,7 +22,7 @@ public interface KsOrderMapper extends BaseMapper<KsOrder> {
     @Select("select * from ks_order where cellphone=#{cellphone}")
     List<KsOrder> selectKsOrdersByPhone(@Param("cellphone") String cellphone);
 
-    @Select("select * from ks_order where cellphone like CONCAT(#{searchText},'%') or CONCAT()")
+    @Select("select * from ks_order where cellphone like CONCAT(#{searchText},'%') or name like CONCAT(#{searchText},'%')")
     List<KsOrder> selectKsOrdersBySearchText(@Param("searchText") String searchText);
 
     @Update("update ks_order set status=#{status}, comment=#{comment} " +

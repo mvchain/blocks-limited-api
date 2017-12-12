@@ -37,6 +37,7 @@ create table auth(
     updated_at timestamp default CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+
 drop table if exists ks_order;
 create table ks_order(
     id bigint primary key auto_increment,
@@ -48,6 +49,7 @@ create table ks_order(
     sum int,
     pay_channel int,
     pay_account varchar(256),
+    payer_name varchar(16),
     comment varchar(1000),
     status tinyint default 0,
     created_at timestamp default CURRENT_TIMESTAMP,
