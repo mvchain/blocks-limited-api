@@ -177,11 +177,15 @@ public class InviteController {
         if (!inviteService.md5(authEmp).equals(password.toUpperCase())) {
             return responseGenerator.fail("密码错误！");
         }
-        int result = ksOrderMapper.updateStatus(id, KsOrder.STATUS_CONFIRMED);
+        int result = 0;
         KsOrder ksOrder = ksOrderMapper.selectById(id);
-        if (!StringUtils.isEmpty(ksOrder.getInviteCode())) {
-            InviteUser inviteUser = inviteUserMapper.selectByCode(ksOrder.getInviteCode());
-            inviteUserMapper.updateCount(ksOrder.getInviteCode(), inviteUser.getInviteCount() + ksOrder.getQuantity());
+        if (ksOrder.getStatus() == KsOrder.STATUS_UNPAID || ksOrder.getStatus() == KsOrder.STATUS_PAID) {
+            result = ksOrderMapper.updateStatus(id, KsOrder.STATUS_CONFIRMED);
+            ksOrder = ksOrderMapper.selectById(id);
+            if (!StringUtils.isEmpty(ksOrder.getInviteCode())) {
+                InviteUser inviteUser = inviteUserMapper.selectByCode(ksOrder.getInviteCode());
+                inviteUserMapper.updateCount(ksOrder.getInviteCode(), inviteUser.getInviteCount() + ksOrder.getQuantity());
+            }
         }
         return responseGenerator.success(result);
     }

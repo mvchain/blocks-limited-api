@@ -39,6 +39,8 @@ dependencies {
     compile('mysql:mysql-connector-java:5.1.21')
     compile('io.springfox:springfox-swagger2:2.2.2')
     compile('io.springfox:springfox-swagger-ui:2.2.2')
+    compile('com.aliyun:aliyun-java-sdk-core:3.2.2')
+    compile('com.aliyun:aliyun-java-sdk-sms:3.0.0-rc1')
     testCompile('org.springframework.boot:spring-boot-starter-test')
 }
 
