@@ -179,7 +179,7 @@ public class InviteController {
         }
         int result = 0;
         KsOrder ksOrder = ksOrderMapper.selectById(id);
-        if (ksOrder.getStatus() == KsOrder.STATUS_UNPAID || ksOrder.getStatus() == KsOrder.STATUS_PAID) {
+        if (ksOrder.getStatus() == KsOrder.STATUS_PAID) {
             result = ksOrderMapper.updateStatus(id, KsOrder.STATUS_CONFIRMED);
             ksOrder = ksOrderMapper.selectById(id);
             if (!StringUtils.isEmpty(ksOrder.getInviteCode())) {
