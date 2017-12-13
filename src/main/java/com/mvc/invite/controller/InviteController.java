@@ -17,9 +17,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
-import tk.mybatis.mapper.entity.Condition;
-import tk.mybatis.mapper.entity.Example;
 
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,6 +32,8 @@ public class InviteController {
 
     @Value("${price}")
     private Integer price;
+    @Value("${auth.emp}")
+    private String authEmp;
 
     @Autowired
     private InviteUserMapper inviteUserMapper;
@@ -129,7 +130,11 @@ public class InviteController {
     @ApiOperation(value = "审核列表", notes = "searchText为手机号和姓名搜索")
     @GetMapping("/order")
     public String orderlist(
-            @RequestParam String searchText) throws JsonProcessingException {
+            @RequestParam String password,
+            @RequestParam String searchText) throws JsonProcessingException, NoSuchAlgorithmException {
+        if (!inviteService.md5(authEmp).equals(password.toUpperCase())) {
+            return responseGenerator.fail("密码错误！");
+        }
         List<KsOrder> list = new ArrayList<>();
         if (StringUtils.isEmpty(searchText)) {
             list = ksOrderMapper.selectKsOrders();
@@ -142,21 +147,36 @@ public class InviteController {
 
     @ApiOperation(value = "确认发货", notes = "data为1表示成功")
     @PutMapping("/order/delivery")
-    public String orderDelivered(@RequestParam Integer id) throws JsonProcessingException {
+    public String orderDelivered(
+            @RequestParam String password,
+            @RequestParam Integer id) throws JsonProcessingException, NoSuchAlgorithmException {
+        if (!inviteService.md5(authEmp).equals(password.toUpperCase())) {
+            return responseGenerator.fail("密码错误！");
+        }
         int result = ksOrderMapper.updateStatus(id, KsOrder.STATUS_DELIVERING);
         return responseGenerator.success(result);
     }
 
     @ApiOperation(value = "完成订单", notes = "data为1表示成功")
     @PutMapping("/order/finish")
-    public String orderFinished(@RequestParam Integer id) throws JsonProcessingException {
+    public String orderFinished(
+            @RequestParam String password,
+            @RequestParam Integer id) throws JsonProcessingException, NoSuchAlgorithmException {
+        if (!inviteService.md5(authEmp).equals(password.toUpperCase())) {
+            return responseGenerator.fail("密码错误！");
+        }
         int result = ksOrderMapper.updateStatus(id, KsOrder.STATUS_FINISHED);
         return responseGenerator.success(result);
     }
 
     @ApiOperation(value = "审核通过", notes = "data为1表示成功")
     @PutMapping("/order/confirmation")
-    public String orderConfirmed(@RequestParam Integer id) throws JsonProcessingException {
+    public String orderConfirmed(
+            @RequestParam String password,
+            @RequestParam Integer id) throws JsonProcessingException, NoSuchAlgorithmException {
+        if (!inviteService.md5(authEmp).equals(password.toUpperCase())) {
+            return responseGenerator.fail("密码错误！");
+        }
         int result = ksOrderMapper.updateStatus(id, KsOrder.STATUS_CONFIRMED);
         KsOrder ksOrder = ksOrderMapper.selectById(id);
         if (!StringUtils.isEmpty(ksOrder.getInviteCode())) {
@@ -182,7 +202,12 @@ public class InviteController {
 
     @ApiOperation(value = "审核不通过", notes = "data为1表示成功")
     @PutMapping("/order/confirm/failure")
-    public String orderConfirmFailure(@RequestParam Integer id, @RequestParam String comment) throws JsonProcessingException {
+    public String orderConfirmFailure(
+            @RequestParam String password,
+            @RequestParam Integer id, @RequestParam String comment) throws JsonProcessingException, NoSuchAlgorithmException {
+        if (!inviteService.md5(authEmp).equals(password.toUpperCase())) {
+            return responseGenerator.fail("密码错误！");
+        }
         int result = ksOrderMapper.updateComment(id, KsOrder.STATUS_UNCONFIRMED, comment);
         return responseGenerator.success(result);
     }
