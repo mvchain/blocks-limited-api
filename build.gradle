@@ -11,8 +11,9 @@ buildscript {
 
 
 apply plugin: 'java'
+apply plugin: 'application'
 apply plugin: 'org.springframework.boot'
-
+mainClassName = "com.mvc.invite.InviteApp"
 
 //生成的jar包包名和版本
 jar {
