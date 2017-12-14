@@ -10,6 +10,7 @@ import com.mvc.invite.model.InviteUserVO;
 import com.mvc.invite.model.KsOrder;
 import com.mvc.invite.service.InviteService;
 import com.mvc.invite.service.ResponseGenerator;
+import com.mvc.invite.service.YupianJavaSmsApi;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.java.Log;
@@ -18,6 +19,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
@@ -30,10 +34,14 @@ import java.util.List;
 @Api(value = "库神钱包", description = "")
 public class InviteController {
 
+    static final long SMS_TPL_ORDER_CONFIRM = 2098620L;
+    static final long SMS_TPL_ORDER_FAIL = 2098640L;
+
     @Value("${price}")
     private Integer price;
     @Value("${auth.emp}")
     private String authEmp;
+    private static String ENCODING = "UTF-8";
 
     @Autowired
     private InviteUserMapper inviteUserMapper;
@@ -169,27 +177,6 @@ public class InviteController {
         return responseGenerator.success(result);
     }
 
-    @ApiOperation(value = "审核通过", notes = "data为1表示成功")
-    @PutMapping("/order/confirmation")
-    public String orderConfirmed(
-            @RequestParam String password,
-            @RequestParam Integer id) throws JsonProcessingException, NoSuchAlgorithmException {
-        if (!inviteService.md5(authEmp).equals(password.toUpperCase())) {
-            return responseGenerator.fail("密码错误！");
-        }
-        int result = 0;
-        KsOrder ksOrder = ksOrderMapper.selectById(id);
-        if (ksOrder.getStatus() == KsOrder.STATUS_PAID) {
-            result = ksOrderMapper.updateStatus(id, KsOrder.STATUS_CONFIRMED);
-            ksOrder = ksOrderMapper.selectById(id);
-            if (!StringUtils.isEmpty(ksOrder.getInviteCode())) {
-                InviteUser inviteUser = inviteUserMapper.selectByCode(ksOrder.getInviteCode());
-                inviteUserMapper.updateCount(ksOrder.getInviteCode(), inviteUser.getInviteCount() + ksOrder.getQuantity());
-            }
-        }
-        return responseGenerator.success(result);
-    }
-
     @ApiOperation(value = "确认付款", notes = "" +
             "data为1表示成功<br/>" +
             "payChannel 1 为支付宝，2 为银行转账<br/>")
@@ -204,15 +191,52 @@ public class InviteController {
         return responseGenerator.success(result);
     }
 
+    @ApiOperation(value = "审核通过", notes = "data为1表示成功")
+    @PutMapping("/order/confirmation")
+    public String orderConfirmed(
+            @RequestParam String password,
+            @RequestParam Integer id) throws IOException, NoSuchAlgorithmException {
+        if (!inviteService.md5(authEmp).equals(password.toUpperCase())) {
+            return responseGenerator.fail("密码错误！");
+        }
+        int result = 0;
+        KsOrder ksOrder = ksOrderMapper.selectById(id);
+        if (ksOrder.getStatus() == KsOrder.STATUS_PAID) {
+            result = ksOrderMapper.updateStatus(id, KsOrder.STATUS_CONFIRMED);
+            ksOrder = ksOrderMapper.selectById(id);
+            if (!StringUtils.isEmpty(ksOrder.getInviteCode())) {
+                InviteUser inviteUser = inviteUserMapper.selectByCode(ksOrder.getInviteCode());
+                inviteUserMapper.updateCount(ksOrder.getInviteCode(), inviteUser.getInviteCount() + ksOrder.getQuantity());
+            }
+            String tplValue = URLEncoder.encode("#name#", ENCODING) + "=" +
+                    URLEncoder.encode(ksOrder.getName(), ENCODING) + "&" + URLEncoder.encode(
+                    "#oid#", ENCODING) + "=" + URLEncoder.encode(ksOrder.getId().toString(),
+                    ENCODING) + "&" + URLEncoder.encode(
+                    "#comment#", ENCODING) + "=" + URLEncoder.encode("钱没付",
+                    ENCODING);
+            YupianJavaSmsApi.tplSendSms("0f937830e9c16699dc4d08b78aa8c5b3", SMS_TPL_ORDER_CONFIRM, tplValue, ksOrder.getCellphone());
+        }
+        return responseGenerator.success(result);
+    }
+
     @ApiOperation(value = "审核不通过", notes = "data为1表示成功")
     @PutMapping("/order/confirm/failure")
     public String orderConfirmFailure(
             @RequestParam String password,
-            @RequestParam Integer id, @RequestParam String comment) throws JsonProcessingException, NoSuchAlgorithmException {
+            @RequestParam Integer id,
+            @RequestParam String comment) throws IOException, NoSuchAlgorithmException {
         if (!inviteService.md5(authEmp).equals(password.toUpperCase())) {
             return responseGenerator.fail("密码错误！");
         }
         int result = ksOrderMapper.updateComment(id, KsOrder.STATUS_UNCONFIRMED, comment);
+        KsOrder ksOrder = ksOrderMapper.selectById(id);
+        String tplValue = URLEncoder.encode("#name#", ENCODING) + "=" +
+                URLEncoder.encode(ksOrder.getName(), ENCODING) + "&" + URLEncoder.encode(
+                "#oid#", ENCODING) + "=" + URLEncoder.encode(ksOrder.getId().toString(),
+                ENCODING) + "&" + URLEncoder.encode(
+                "#comment#", ENCODING) + "=" + URLEncoder.encode(ksOrder.getComment(),
+                ENCODING);
+        YupianJavaSmsApi.tplSendSms("0f937830e9c16699dc4d08b78aa8c5b3", SMS_TPL_ORDER_CONFIRM, tplValue, ksOrder.getCellphone());
         return responseGenerator.success(result);
     }
 
