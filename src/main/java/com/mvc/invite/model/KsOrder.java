@@ -25,6 +25,7 @@ public class KsOrder {
     public static final int STATUS_UNCONFIRMED = 3;
     public static final int STATUS_DELIVERING = 4;
     public static final int STATUS_FINISHED = 5;
+    public static final int STATUS_EXPIRED = 6;
 
     private Integer id;
     private String name;
