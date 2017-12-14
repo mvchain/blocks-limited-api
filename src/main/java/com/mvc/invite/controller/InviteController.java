@@ -201,7 +201,7 @@ public class InviteController {
         }
         int result = 0;
         KsOrder ksOrder = ksOrderMapper.selectById(id);
-        if (ksOrder.getStatus() == KsOrder.STATUS_PAID) {
+        if (ksOrder.getStatus() == KsOrder.STATUS_PAID || ksOrder.getStatus() == KsOrder.STATUS_UNCONFIRMED) {
             result = ksOrderMapper.updateStatus(id, KsOrder.STATUS_CONFIRMED);
             ksOrder = ksOrderMapper.selectById(id);
             if (!StringUtils.isEmpty(ksOrder.getInviteCode())) {
@@ -211,10 +211,9 @@ public class InviteController {
             String tplValue = URLEncoder.encode("#name#", ENCODING) + "=" +
                     URLEncoder.encode(ksOrder.getName(), ENCODING) + "&" + URLEncoder.encode(
                     "#oid#", ENCODING) + "=" + URLEncoder.encode(ksOrder.getId().toString(),
-                    ENCODING) + "&" + URLEncoder.encode(
-                    "#comment#", ENCODING) + "=" + URLEncoder.encode("钱没付",
                     ENCODING);
-            YupianJavaSmsApi.tplSendSms("0f937830e9c16699dc4d08b78aa8c5b3", SMS_TPL_ORDER_CONFIRM, tplValue, ksOrder.getCellphone());
+            String smsResult = YupianJavaSmsApi.tplSendSms("0f937830e9c16699dc4d08b78aa8c5b3", SMS_TPL_ORDER_CONFIRM, tplValue, ksOrder.getCellphone());
+            log.info(smsResult);
         }
         return responseGenerator.success(result);
     }
@@ -233,10 +232,9 @@ public class InviteController {
         String tplValue = URLEncoder.encode("#name#", ENCODING) + "=" +
                 URLEncoder.encode(ksOrder.getName(), ENCODING) + "&" + URLEncoder.encode(
                 "#oid#", ENCODING) + "=" + URLEncoder.encode(ksOrder.getId().toString(),
-                ENCODING) + "&" + URLEncoder.encode(
-                "#comment#", ENCODING) + "=" + URLEncoder.encode(ksOrder.getComment(),
                 ENCODING);
-        YupianJavaSmsApi.tplSendSms("0f937830e9c16699dc4d08b78aa8c5b3", SMS_TPL_ORDER_CONFIRM, tplValue, ksOrder.getCellphone());
+        String smsResult = YupianJavaSmsApi.tplSendSms("0f937830e9c16699dc4d08b78aa8c5b3", SMS_TPL_ORDER_FAIL, tplValue, ksOrder.getCellphone());
+        log.info(smsResult);
         return responseGenerator.success(result);
     }
 
